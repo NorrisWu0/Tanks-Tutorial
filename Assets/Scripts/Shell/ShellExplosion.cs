@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.Analytics;
 
 public class ShellExplosion : MonoBehaviour
 {
-    public LayerMask m_TankMask;
-    public ParticleSystem m_ExplosionParticles;       
-    public AudioSource m_ExplosionAudio;              
-    public float m_MaxDamage = 100f;                  
-    public float m_ExplosionForce = 1000f;            
-    public float m_MaxLifeTime = 2f;                  
-    public float m_ExplosionRadius = 5f;              
+    [SerializeField] LayerMask m_TankMask;
+    [SerializeField] ParticleSystem m_ExplosionParticles;       
+    [SerializeField] AudioSource m_ExplosionAudio;              
+    [SerializeField] float m_MaxDamage = 100f;                  
+    [SerializeField] float m_ExplosionForce = 1000f;            
+    [SerializeField] float m_MaxLifeTime = 2f;                  
+    [SerializeField] float m_ExplosionRadius = 5f;              
 
 
     private void Start()
@@ -17,15 +18,52 @@ public class ShellExplosion : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Find all the tanks in an area around the shell and damage them.
+    /// </summary>
     private void OnTriggerEnter(Collider other)
     {
-        // Find all the tanks in an area around the shell and damage them.
+        Collider[] _colliders = Physics.OverlapSphere(transform.position, m_ExplosionRadius, m_TankMask);
+
+        for (int i = 0; i < _colliders.Length; i++)
+        {
+            // Find rigidbody object and add force to it
+            Rigidbody _targetRigidbody = _colliders[i].GetComponent<Rigidbody>();
+            if (!_targetRigidbody)
+                continue;
+            _targetRigidbody.AddExplosionForce(m_ExplosionForce, transform.position, m_ExplosionRadius);
+
+            // Find tank and apply damage to it
+            TankHealth _targetHealth = _targetRigidbody.GetComponent<TankHealth>();
+            if (!_targetHealth)
+                continue;
+            _targetHealth.TakeDamage(CalculateDamage(_targetRigidbody.position));
+        }
+
+        // Play audio and effects
+        m_ExplosionParticles.transform.parent = null;
+        m_ExplosionParticles.Play();
+        m_ExplosionAudio.Play();
+
+        Destroy(m_ExplosionParticles.gameObject, m_ExplosionParticles.main.duration);
+        Destroy(gameObject);
     }
 
-
-    private float CalculateDamage(Vector3 targetPosition)
+    /// <summary>
+    /// Calculate the amount of damage a target should take based on it's position.
+    /// </summary>
+    private float CalculateDamage(Vector3 _targetPosition)
     {
-        // Calculate the amount of damage a target should take based on it's position.
-        return 0f;
+        // Find the distance between the target and the explosion
+        Vector3 _explosionToTarget = _targetPosition - transform.position;
+        float _explosionDistance = _explosionToTarget.magnitude;
+
+        // Calculate the magnitude of impact to target
+        float _relativeDistance = (m_ExplosionRadius - _explosionDistance) / m_ExplosionRadius;
+        float _damage = m_MaxDamage * _relativeDistance;
+
+        _damage = Mathf.Max(0f, _damage);
+
+        return _damage;
     }
 }
