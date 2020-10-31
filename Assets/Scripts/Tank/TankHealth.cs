@@ -3,18 +3,16 @@ using UnityEngine.UI;
 
 public class TankHealth : MonoBehaviour
 {
-    public float m_StartingHealth = 100f;          
-    public Slider m_Slider;                        
-    public Image m_FillImage;                      
-    public Color m_FullHealthColor = Color.green;  
-    public Color m_ZeroHealthColor = Color.red;    
-    public GameObject m_ExplosionPrefab;
+    [SerializeField] float m_StartingHealth = 100f;          
+    [SerializeField] Slider m_Slider = null;                        
+    [SerializeField] Image m_FillImage = null;
+    [SerializeField] Gradient m_HealthGradient = null;  
+    [SerializeField] GameObject m_ExplosionPrefab = null;
     
-    /*
-    private AudioSource m_ExplosionAudio;          
-    private ParticleSystem m_ExplosionParticles;   
-    private float m_CurrentHealth;  
-    private bool m_Dead;            
+    private AudioSource m_ExplosionAudio = null;
+    private ParticleSystem m_ExplosionParticles = null;   
+    private float m_CurrentHealth = 0.0f;
+    private bool m_Dead = false;            
 
 
     private void Awake()
@@ -33,22 +31,42 @@ public class TankHealth : MonoBehaviour
 
         SetHealthUI();
     }
-    */
 
-    public void TakeDamage(float amount)
+    /// <summary>
+    /// Adjust the tank's current health, update the UI based on the new health and check whether or not the tank is dead.
+    /// </summary>
+    public void TakeDamage(float _amount)
     {
-        // Adjust the tank's current health, update the UI based on the new health and check whether or not the tank is dead.
+        m_CurrentHealth -= _amount;
+
+        SetHealthUI();
+
+        if (m_CurrentHealth <= 0f && !m_Dead)
+            OnDeath();
     }
 
-
+    /// <summary>
+    /// Adjust the value and colour of the slider.
+    /// </summary>
     private void SetHealthUI()
     {
-        // Adjust the value and colour of the slider.
+        m_Slider.value = m_CurrentHealth;
+        m_FillImage.color = m_HealthGradient.Evaluate(m_CurrentHealth / m_StartingHealth);
     }
 
-
+    /// <summary>
+    /// Play the effects for the death of the tank and deactivate it.
+    /// </summary>
     private void OnDeath()
     {
-        // Play the effects for the death of the tank and deactivate it.
+        m_Dead = true;
+
+        m_ExplosionParticles.transform.position = transform.position;
+        m_ExplosionParticles.gameObject.SetActive(true);
+
+        m_ExplosionParticles.Play();
+        m_ExplosionAudio.Play();
+
+        gameObject.SetActive(false);
     }
 }

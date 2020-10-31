@@ -2,10 +2,11 @@
 
 public class CameraControl : MonoBehaviour
 {
-    public float m_DampTime = 0.2f;                 
-    public float m_ScreenEdgeBuffer = 4f;           
-    public float m_MinSize = 6.5f;                  
-    [HideInInspector] public Transform[] m_Targets; 
+    [SerializeField] float m_DampTime = 0.2f;
+    [SerializeField] float m_ScreenEdgeBuffer = 4f;
+    [SerializeField] float m_MinSize = 6.5f;                  
+    //[HideInInspector]
+    public Transform[] targets; 
 
 
     private Camera m_Camera;                        
@@ -22,74 +23,82 @@ public class CameraControl : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Move();
-        Zoom();
+        MoveRig();
+        ZoomCamera();
     }
 
-
-    private void Move()
+    /// <summary>
+    /// Smooth align camera rig to desired position 
+    /// </summary>
+    private void MoveRig()
     {
         FindAveragePosition();
 
         transform.position = Vector3.SmoothDamp(transform.position, m_DesiredPosition, ref m_MoveVelocity, m_DampTime);
     }
 
-
+    /// <summary>
+    /// Find the point between targets and assign it to desired position for camera to align to.
+    /// </summary>
     private void FindAveragePosition()
     {
-        Vector3 averagePos = new Vector3();
-        int numTargets = 0;
+        Vector3 _averagePos = new Vector3();
+        int _numTargets = 0;
 
-        for (int i = 0; i < m_Targets.Length; i++)
+        for (int i = 0; i < targets.Length; i++)
         {
-            if (!m_Targets[i].gameObject.activeSelf)
+            if (!targets[i].gameObject.activeSelf)
                 continue;
 
-            averagePos += m_Targets[i].position;
-            numTargets++;
+            _averagePos += targets[i].position;
+            _numTargets++;
         }
 
-        if (numTargets > 0)
-            averagePos /= numTargets;
+        if (_numTargets > 0)
+            _averagePos /= _numTargets;
 
-        averagePos.y = transform.position.y;
+        _averagePos.y = transform.position.y;
 
-        m_DesiredPosition = averagePos;
+        m_DesiredPosition = _averagePos;
     }
 
-
-    private void Zoom()
+    /// <summary>
+    /// Change size of the orphographic camera to zoom in/out the view as required
+    /// </summary>
+    private void ZoomCamera()
     {
-        float requiredSize = FindRequiredSize();
-        m_Camera.orthographicSize = Mathf.SmoothDamp(m_Camera.orthographicSize, requiredSize, ref m_ZoomSpeed, m_DampTime);
+        float _requiredSize = FindRequiredSize();
+        m_Camera.orthographicSize = Mathf.SmoothDamp(m_Camera.orthographicSize, _requiredSize, ref m_ZoomSpeed, m_DampTime);
     }
 
-
+    /// <summary>
+    ///  
+    /// </summary>
     private float FindRequiredSize()
     {
-        Vector3 desiredLocalPos = transform.InverseTransformPoint(m_DesiredPosition);
+        Vector3 _desiredLocalPos = transform.InverseTransformPoint(m_DesiredPosition);
 
-        float size = 0f;
+        float _size = 0f;
 
-        for (int i = 0; i < m_Targets.Length; i++)
+        for (int i = 0; i < targets.Length; i++)
         {
-            if (!m_Targets[i].gameObject.activeSelf)
+            if (!targets[i].gameObject.activeSelf)
                 continue;
 
-            Vector3 targetLocalPos = transform.InverseTransformPoint(m_Targets[i].position);
+            Vector3 _targetLocalPos = transform.InverseTransformPoint(targets[i].position);
 
-            Vector3 desiredPosToTarget = targetLocalPos - desiredLocalPos;
+            Vector3 _desiredPosToTarget = _targetLocalPos - _desiredLocalPos;
 
-            size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.y));
+            _size = Mathf.Max (_size, Mathf.Abs (_desiredPosToTarget.y));
 
-            size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.x) / m_Camera.aspect);
+            _size = Mathf.Max (_size, Mathf.Abs (_desiredPosToTarget.x) / m_Camera.aspect);
         }
         
-        size += m_ScreenEdgeBuffer;
+        _size += m_ScreenEdgeBuffer;
 
-        size = Mathf.Max(size, m_MinSize);
+        _size = Mathf.Max(_size, m_MinSize);
 
-        return size;
+        return _size;
     }
 
 
