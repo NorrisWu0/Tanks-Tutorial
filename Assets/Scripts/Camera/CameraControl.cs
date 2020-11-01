@@ -5,8 +5,7 @@ public class CameraControl : MonoBehaviour
     [SerializeField] float m_DampTime = 0.2f;
     [SerializeField] float m_ScreenEdgeBuffer = 4f;
     [SerializeField] float m_MinSize = 6.5f;                  
-    //[HideInInspector]
-    public Transform[] targets; 
+    [HideInInspector] public Transform[] targets; 
 
 
     private Camera m_Camera;                        
@@ -101,7 +100,9 @@ public class CameraControl : MonoBehaviour
         return _size;
     }
 
-
+    /// <summary>
+    /// Setup camera to required position and size.
+    /// </summary>
     public void SetStartPositionAndSize()
     {
         FindAveragePosition();
