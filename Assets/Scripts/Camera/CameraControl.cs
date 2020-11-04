@@ -8,10 +8,10 @@ public class CameraControl : MonoBehaviour
     [HideInInspector] public Transform[] targets; 
 
 
-    private Camera m_Camera;                        
-    private float m_ZoomSpeed;                      
-    private Vector3 m_MoveVelocity;                 
-    private Vector3 m_DesiredPosition;              
+    private Camera m_Camera = null;                 
+    private float m_ZoomSpeed = 0.0f;                      
+    private Vector3 m_MoveVelocity = Vector3.zero;
+    private Vector3 m_DesiredPosition = Vector3.zero;
 
 
     private void Awake()

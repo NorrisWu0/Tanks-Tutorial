@@ -3,9 +3,9 @@ using UnityEngine.Analytics;
 
 public class ShellExplosion : MonoBehaviour
 {
-    [SerializeField] LayerMask m_TankMask;
-    [SerializeField] ParticleSystem m_ExplosionParticles;       
-    [SerializeField] AudioSource m_ExplosionAudio;              
+    [SerializeField] LayerMask m_TankMask = new LayerMask();
+    [SerializeField] ParticleSystem m_ExplosionParticles = null;
+    [SerializeField] AudioSource m_ExplosionAudio = null; 
     [SerializeField] float m_MaxDamage = 100f;                  
     [SerializeField] float m_ExplosionForce = 1000f;            
     [SerializeField] float m_MaxLifeTime = 2f;                  

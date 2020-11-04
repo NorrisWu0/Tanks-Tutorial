@@ -1,26 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using TMPro;
-using UnityEditor.VersionControl;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] int m_NumRoundsToWin = 5;        
     [SerializeField] float m_StartDelay = 3f;         
     [SerializeField] float m_EndDelay = 3f;           
-    [SerializeField] CameraControl m_CameraControl;   
-    [SerializeField] TextMeshProUGUI m_MessageText;              
-    [SerializeField] GameObject m_TankPrefab;         
-    [SerializeField] TankManager[] m_Tanks;           
+    [SerializeField] CameraControl m_CameraControl = null;
+    [SerializeField] TextMeshProUGUI m_MessageText = null;
+    [SerializeField] GameObject m_TankPrefab = null;
+    [SerializeField] TankManager[] m_Tanks = null;           
 
 
-    private int m_RoundNumber;              
-    private WaitForSeconds m_StartWait;     
-    private WaitForSeconds m_EndWait;       
-    private TankManager m_RoundWinner;
-    private TankManager m_GameWinner;       
+    private int m_RoundNumber = 0;              
+    private WaitForSeconds m_StartWait = null;
+    private WaitForSeconds m_EndWait = null;
+    private TankManager m_RoundWinner = null;
+    private TankManager m_GameWinner = null;
 
 
     private void Start()
