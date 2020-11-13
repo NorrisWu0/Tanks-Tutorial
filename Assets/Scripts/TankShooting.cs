@@ -3,21 +3,25 @@ using UnityEngine.UI;
 
 public class TankShooting : MonoBehaviour
 {
-    public int m_PlayerNumber = 1;       
-    [SerializeField] Rigidbody m_Shell = null;            
-    [SerializeField] Transform m_Muzzle = null;    
-    [SerializeField] Slider m_AimSlider = null;           
-    [SerializeField] AudioSource m_ShootingAudio = null;  
-    [SerializeField] AudioClip m_ChargingClip = null;     
-    [SerializeField] AudioClip m_FireClip = null;         
+    [Header("Cannon Stats")]
     [SerializeField] float m_MinLaunchForce = 15f; 
     [SerializeField] float m_MaxLaunchForce = 30f; 
     [SerializeField] float m_MaxChargeTime = 0.75f;
 
-    private string m_FireButton;         
     private float m_CurrentLaunchForce;  
     private float m_ChargeSpeed;         
+
+    [Header("Cannon Setup")]
+    [SerializeField] Rigidbody m_Shell = null;            
+    [SerializeField] Transform m_Muzzle = null;    
+    [SerializeField] Slider m_AimSlider = null;
     private bool m_Fired;                
+    
+    [Header("Audio Setup")]
+    [SerializeField] AudioSource m_ShootingAudio = null;  
+    [SerializeField] AudioClip m_ChargingClip = null;     
+    [SerializeField] AudioClip m_FireClip = null;         
+     
 
 
     private void OnEnable()
@@ -29,7 +33,6 @@ public class TankShooting : MonoBehaviour
 
     private void Start()
     {
-        m_FireButton = "Fire" + m_PlayerNumber;
 
         m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
     }
@@ -37,7 +40,7 @@ public class TankShooting : MonoBehaviour
     /// <summary>
     /// Track the current state of the fire button and make decisions based on the current launch force.
     /// </summary>
-    private void Update()
+    public void FiringLogic(string _fireButton)
     {
         m_AimSlider.value = m_MinLaunchForce;
 
@@ -45,10 +48,10 @@ public class TankShooting : MonoBehaviour
         {
             // Max charge reached, fire shell.
             m_CurrentLaunchForce = m_MaxLaunchForce;
-            Fire();
+            FireShell();
 
         }
-        else if (Input.GetButtonDown(m_FireButton))
+        else if (Input.GetButtonDown(_fireButton))
         {
             // Pressed fire button, start charging from mininum launch force.
             m_Fired = false;
@@ -57,25 +60,26 @@ public class TankShooting : MonoBehaviour
             m_ShootingAudio.clip = m_ChargingClip;
             m_ShootingAudio.Play();
         }
-        else if (Input.GetButton(m_FireButton) && !m_Fired)
+        else if (Input.GetButton(_fireButton) && !m_Fired)
         {
             // Holding fire button to charge launch force.
             m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
 
             m_AimSlider.value = m_CurrentLaunchForce;
         }
-        else if (Input.GetButtonUp(m_FireButton) && !m_Fired)
+        else if (Input.GetButtonUp(_fireButton) && !m_Fired)
         {
             // Released button and fire shell.
-            Fire();
+            FireShell();
         }
 
     }
 
+
     /// <summary>
     /// Instantiate and launch the shell.
     /// </summary>
-    private void Fire()
+    private void FireShell()
     {
         m_Fired = true;
 
