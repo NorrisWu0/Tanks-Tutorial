@@ -125,9 +125,6 @@ public class GameManager : MonoBehaviour
         if (m_RoundWinner != null)
             m_RoundWinner.wins++;
 
-        Debug.Log(m_RoundWinner.instance.gameObject);
-        Debug.Log(m_RoundWinner.wins);
-
         // Check if there is a game winner
         m_GameWinner = GetGameWinner();
 

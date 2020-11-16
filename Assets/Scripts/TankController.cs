@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Mirror;
 
 [RequireComponent(typeof(TankHealth))]
 [RequireComponent(typeof(TankMovement))]
@@ -9,7 +8,7 @@ using UnityEngine;
 /// <summary>
 /// Tank Controller class will handles all the input and forward it to the sub components for corresponding actions.
 /// </summary>
-public class TankController : MonoBehaviour
+public class TankController : NetworkBehaviour
 {
     public int playerNumber = 0;
 
@@ -48,19 +47,26 @@ public class TankController : MonoBehaviour
     /// <summary>
     /// Handles all the Input from user to control the tank
     /// </summary>
+    [Client]
     private void Update()
     {
-        if (m_Movement.enabled)
+        if (hasAuthority)
         {
-            // Store the player's input and make sure the audio for the engine is playing.
-            m_VertInputValue = Input.GetAxis(m_VertAxis);
-            m_HoriInputValue = Input.GetAxis(m_HoriAxis);
+            if (m_Movement.enabled)
+            {
+                // Store the player's input and make sure the audio for the engine is playing.
+                m_VertInputValue = Input.GetAxis(m_VertAxis);
+                m_HoriInputValue = Input.GetAxis(m_HoriAxis);
 
-            m_Movement.PlayEngineAudio(m_VertInputValue, m_HoriInputValue);
+                m_Movement.PlayEngineAudio(m_VertInputValue, m_HoriInputValue);
+            }
+
+            if (m_Shooting.enabled)
+                m_Shooting.FiringLogic(m_FireButton);
+
         }
-
-        if (m_Shooting.enabled)
-            m_Shooting.FiringLogic(m_FireButton);
+        else
+            return;
     }
 
 
