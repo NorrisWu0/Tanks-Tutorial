@@ -31,11 +31,7 @@ public class TankShooting : MonoBehaviour
     }
 
 
-    private void Start()
-    {
-
-        m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
-    }
+    private void Start() => m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
 
     /// <summary>
     /// Track the current state of the fire button and make decisions based on the current launch force.

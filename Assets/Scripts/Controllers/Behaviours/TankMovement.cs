@@ -16,35 +16,16 @@ public class TankMovement : MonoBehaviour
     private float m_OriginalPitch;
 
 
-    private void Awake()
-    {
-        m_Rigidbody = GetComponent<Rigidbody>();
-    }
-
-
-    private void OnEnable()
-    {
-        m_Rigidbody.isKinematic = false;
-    }
-
-
-    private void OnDisable()
-    {
-        m_Rigidbody.isKinematic = true;
-    }
-
-
-    private void Start()
-    {
-        m_OriginalPitch = m_EngineAudioSrc.pitch;
-    }
+    private void Awake() => m_Rigidbody = GetComponent<Rigidbody>();
+    private void OnEnable() => m_Rigidbody.isKinematic = false;
+    private void OnDisable() => m_Rigidbody.isKinematic = true;
+    private void Start() => m_OriginalPitch = m_EngineAudioSrc.pitch;
 
     /// <summary>
     /// Play the correct audio clip based on whether or not the tank is moving and what audio is currently playing.
     /// </summary>
     public void PlayEngineAudio(float _vertInput, float _horiInput)
     {
-
         if (Mathf.Abs(_vertInput) < 0.1f && Mathf.Abs(_horiInput) < 0.1f)
         {
             if (m_EngineAudioSrc.clip = m_EngineDriving)
@@ -63,7 +44,6 @@ public class TankMovement : MonoBehaviour
                 m_EngineAudioSrc.Play();
             }
         }
-
     }
 
     /// <summary>
